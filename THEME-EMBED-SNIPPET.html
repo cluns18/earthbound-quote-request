@@ -1,0 +1,76 @@
+<!--
+  ============================================================================
+  ROGUE LAB QUOTE FORM - theme embed + conversion bridge
+  ============================================================================
+  Two ways this is wired:
+
+  A) A/B TEST PAGES (live now, as drafts): /pages/screen-printing-ab-test and
+     /pages/embroidery-ab-test already carry the iframe + this bridge inside their
+     own page template (custom-liquid section). Nothing to paste for those.
+
+  B) DIRECT EMBED on any other page: paste the <div> where the form should sit,
+     and add the <script> ONCE before </body> in theme.liquid (or that page body).
+
+  The iframe fires two events via postMessage that this bridge turns into Google
+  Ads conversions AND a dataLayer push for GTM:
+    obgform_submission -> AW-11156454355/_iALCIOwsrscENP358cp  (Quote Form Lead - New Form (A/B), dynamic value)
+    obgform_call_click -> AW-11156454355/UvgYCN6rvrQcENP358cp  (Call Button Click)
+
+  The submission conversion carries dynamic VALUE (summed quantity, CAD), matching
+  the AZ Hot Tees pattern, and also pushes that value to the dataLayer so GTM can
+  collect it. Fire happens on the Rogue domain (parent), which is where the gclid
+  cookie lives, so attribution is correct (the iframe is cross-origin).
+
+  gtag('config','AW-11156454355') is already loaded by theme.liquid, so this only
+  adds the event listener. ?src= tells the form which page it is on so the
+  decoration method is captured on the lead + in the dataLayer.
+  ============================================================================
+-->
+
+<!-- 1) EMBED: put this where the form should sit on the page -->
+<div id="rl-quote" style="max-width:1040px;margin:0 auto;">
+  <iframe
+    src="https://rogue-lab-quote-request.netlify.app/?src=REPLACE_WITH_PAGE"
+    title="Rogue Lab Quote Request"
+    style="width:100%;height:640px;border:none;display:block;background:#121212;border-radius:14px;"
+    loading="lazy"></iframe>
+</div>
+<!-- Set ?src= per page: screen-printing | embroidery | custom-apparel-winnipeg -->
+
+
+<!-- 2) BRIDGE: add ONCE before </body> in theme.liquid -->
+<script>
+  (function () {
+    window.addEventListener('message', function (e) {
+      var d = e.data || {};
+      if (d.event === 'obgform_submission') {
+        var qty = parseInt(d.quantity, 10) || 1;
+        // push the conversion value to the dataLayer for GTM
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'rl_lead_form_conversion',
+          conversion_value: qty,
+          value: qty,
+          currency: 'CAD',
+          decoration_method: d.decoration_method || '',
+          send_to: 'AW-11156454355/_iALCIOwsrscENP358cp'
+        });
+        // fire the new Google Ads conversion with dynamic value
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', {
+            send_to: 'AW-11156454355/_iALCIOwsrscENP358cp',
+            value: qty,
+            currency: 'CAD',
+            transaction_id: 'rlab-' + Date.now()
+          });
+        }
+      } else if (d.event === 'obgform_call_click') {
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', {
+            send_to: 'AW-11156454355/UvgYCN6rvrQcENP358cp'
+          });
+        }
+      }
+    });
+  })();
+</script>
