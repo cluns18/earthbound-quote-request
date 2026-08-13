@@ -1,19 +1,36 @@
-# Rogue Lab Quote Request
+# Earthbound Inc. — Quote Request Form
 
-Multi-step lead form for Rogue Lab (roguelabmfg.com), embedded via iframe on the Google Ads
-landing pages. Cloned from the proven AZ Hot Tees / Blink Threads converter.
+A rebuild of Earthbound's Typeform (`oDOWHJbD`) as an OBG quote form, so their leads
+land in our stack instead of Typeform's.
 
-- 5 steps: name, project, quantity, artwork (optional), contact.
-- Leads route to the central OBG mail service (`obg-mail-api`, `POST /api/send_lead`,
-  `shop_id: roguelab`). No secrets in this repo.
-- Conversions fire on the parent Shopify page via postMessage (see THEME-EMBED-SNIPPET.html):
-  form submit -> Submit Quote Form, success-screen call button -> Call Button Click.
-- Imagery + logo served from Rogue's Shopify CDN. Brand: charcoal #121212 + gold #bd9a5f.
+It is a **reproduction, not a redesign**. That Typeform has 921 completed responses
+behind it and is the shop's main lead intake, so the copy, question order, branching,
+images, fonts, colours and spacing are all taken from the Typeform API and from
+`getComputedStyle` on the live form. Anything in here that looks like an improvement
+is a regression.
 
-## Dev
-    npm install
-    npm run dev        # form at localhost:5173
-    # open preview.html alongside to see it embedded like a page
+- Theme `KITfG4JN`: Quantico, question `#2E3035`, answer `#037EB4`, button `#008AC8`,
+  ground `#F3F3F0`
+- 50/50 split with the photo on the right, full viewport height
+- All 13 questions, and the single Q1 branch for **Live on Site Printing**
 
-## Deploy
-Netlify (Chris's account, GitHub CI). Build `npm run build`, publish `dist`.
+## Wiring
+
+| Concern | Where it goes |
+|---|---|
+| Lead email | `obg-mail-api` `/api/send_lead`, `shop_id: earthbound` |
+| Artwork | Firebase Storage, `crypto.randomUUID()` path, 25MB cap, type allowlist |
+| Conversion | `postMessage` to the parent page, capped tiered value ladder |
+
+No secrets live in this repo or on its Netlify site. The Firebase web config is
+designed to ship client-side; OBG's Gmail credential stays on our own Vercel.
+
+## Local
+
+```bash
+npm install
+npm run dev      # or: npm run build && npx vite preview
+```
+
+`.env.local` carries the `VITE_FIREBASE_*` values and is gitignored. The same values
+must be set on the Netlify site or artwork uploads silently fail.
