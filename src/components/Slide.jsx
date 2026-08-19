@@ -50,7 +50,10 @@ const Slide = ({
                 src={image}
                 alt={imageAlt}
                 className='slide-image'
-                loading='lazy'
+                // Not lazy. Only one slide is mounted at a time, so its photo is always
+                // in view, and lazy only bought a beat of empty beige on the first paint
+                // of the shop's main intake.
+                fetchPriority='high'
                 // Typeform stores a per-image brightness adjustment on the attachment.
                 style={brightness ? { filter: `brightness(${1 + brightness})` } : undefined}
             />
