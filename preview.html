@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blink Threads - Iframe Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#f0ede4;font-family:'DM Sans',sans-serif}
+.preview-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+h2{font-family:'Figtree',sans-serif;font-weight:800;font-size:2rem;margin-bottom:12px;text-align:center;color:#f0ede4}
+p{text-align:center;color:rgba(240,237,228,0.5);margin-bottom:40px;font-size:1rem}
+.form-frame{width:100%;border:none;display:block;min-height:600px;background:#0a0a0a;border-radius:14px}
+@media(max-width:768px){.form-frame{min-height:700px}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div style="height:80vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:32px">
+<h2 style="font-size:3rem;margin-bottom:8px">Scroll down to see the form</h2>
+<p style="font-size:1.1rem">This simulates the quote form at the bottom of an SEO page</p>
+</div>
+
+<section class="preview-section">
+<h2>Get a Free Quote for Your Project</h2>
+<p>Tell us what you need and we will get back to you within one business day with pricing and a timeline.</p>
+<iframe class="form-frame" src="http://localhost:5175" title="Blink Threads Quote Request Form"></iframe>
+</section>
+
+<div style="height:200px"></div>
+</body>
+</html>

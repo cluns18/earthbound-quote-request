@@ -1,0 +1,328 @@
+@import 'tailwindcss';
+
+/* Quantico is the Typeform theme font (KITfG4JN) and also what earthboundinc.com runs. */
+@import url('https://fonts.googleapis.com/css2?family=Quantico:wght@400;600;700&display=swap');
+
+/* Typeform theme KITfG4JN plus values measured off the live form at
+   form.typeform.com/to/oDOWHJbD. Every number here was read out of getComputedStyle
+   on the real thing rather than eyeballed, so treat them as the spec. */
+:root {
+  --tf-question: #2e3035;   /* theme.colors.question */
+  --tf-answer: #037eb4;     /* theme.colors.answer   */
+  --tf-button: #008ac8;     /* theme.colors.button   */
+  --tf-background: #f3f3f0; /* theme.colors.background */
+  --tf-muted: #55575a;      /* help + hint text, measured */
+
+  /* Typeform renders 8px corners here despite rounded_corners: "small". */
+  --tf-radius: 8px;
+
+  --tf-pad-x: 80px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--tf-background);
+  color: var(--tf-question);
+  font-family: 'Quantico', sans-serif;
+}
+
+/* Measured: image at x=864 of a 1728 viewport, so a straight 50/50, and it runs the
+   full viewport height. No 600px cap. Inside an iframe, 100vh is the frame, which is
+   what we want: the parent sets the height and the form fills it. */
+.slide-wrap {
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+  background: var(--tf-background);
+}
+
+/* Questions with no attachment in the Typeform render full width there too. */
+.slide-wrap.no-image { grid-template-columns: 1fr; }
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px var(--tf-pad-x);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* logo.placement "left", logo.size "small" */
+.slide-logo {
+  position: absolute;
+  top: 30px;
+  left: var(--tf-pad-x);
+  height: 32px;
+  width: auto;
+  z-index: 3;
+}
+
+/* Measured: 26px / 400 weight / 34px line-height. Quantico at 700 is much heavier
+   than the live form, so this stays at 400. */
+.slide-heading {
+  font-family: 'Quantico', sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 34px;
+  color: var(--tf-question);
+  margin-bottom: 14px;
+  max-width: 702px;
+  /* The Typeform copy carries deliberate line breaks. Honor them. */
+  white-space: pre-line;
+}
+
+.required-star { color: var(--tf-answer); }
+
+/* Measured: 18px / #55575A / 24px line-height. */
+.slide-sub {
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--tf-muted);
+  margin-bottom: 26px;
+  max-width: 702px;
+  white-space: pre-line;
+}
+
+/* "Choose as many as you like" — measured 14px / #55575A / 18px. */
+.field-hint {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--tf-muted);
+  margin-bottom: 12px;
+}
+
+.slide-input,
+.slide-textarea {
+  width: 100%;
+  max-width: 460px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(3, 126, 180, 0.35);
+  color: var(--tf-answer);
+  font-family: 'Quantico', sans-serif;
+  font-size: 18px;
+  padding: 8px 0;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.slide-textarea { resize: none; }
+
+.slide-input:focus,
+.slide-textarea:focus { border-color: var(--tf-button); }
+
+.slide-input::placeholder,
+.slide-textarea::placeholder { color: rgba(3, 126, 180, 0.4); }
+
+/* Measured: 256x44, 8px radius, rgba(243,243,240,0.6) fill, and the hairline is a
+   1px spread box-shadow in the answer colour at 10%, not a border. */
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  width: 256px;
+  min-height: 44px;
+  text-align: left;
+  background: rgba(243, 243, 240, 0.6);
+  box-shadow: rgba(3, 126, 180, 0.1) 0 0 0 1px;
+  border: none;
+  border-radius: var(--tf-radius);
+  color: var(--tf-answer);
+  font-family: 'Quantico', sans-serif;
+  font-size: 18px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.choice:hover { background: rgba(3, 126, 180, 0.08); }
+
+.choice.selected {
+  background: rgba(3, 126, 180, 0.14);
+  box-shadow: var(--tf-button) 0 0 0 1px;
+}
+
+/* Measured: 110x40, 8px radius, 14px / 600. theme.has_transparent_button is false, so
+   the enabled state is a solid fill; white on #008AC8 clears contrast comfortably.
+   Disabled reproduces the live form's near-invisible resting state. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  height: 40px;
+  background: var(--tf-button);
+  color: #ffffff;
+  font-family: 'Quantico', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: var(--tf-radius);
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.btn-primary:hover { filter: brightness(0.93); }
+
+.btn-primary:disabled {
+  background: rgba(3, 126, 180, 0.25);
+  color: #ffffff;
+  cursor: default;
+}
+
+.btn-back {
+  background: transparent;
+  border: none;
+  color: var(--tf-muted);
+  font-family: 'Quantico', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+
+.btn-back:hover { color: var(--tf-question); }
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+/* progress_bar: "proportion" */
+.progress-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(46, 48, 53, 0.1);
+  z-index: 4;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--tf-button);
+  transition: width 0.3s ease;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(243, 243, 240, 0.6);
+  box-shadow: rgba(3, 126, 180, 0.1) 0 0 0 1px;
+  border: none;
+  border-radius: var(--tf-radius);
+  color: var(--tf-answer);
+  font-family: 'Quantico', sans-serif;
+  font-size: 16px;
+  padding: 14px 20px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  max-width: 460px;
+  width: 100%;
+}
+
+.upload-btn:hover { background: rgba(3, 126, 180, 0.08); }
+
+.upload-note {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tf-muted);
+  margin-bottom: 22px;
+  max-width: 460px;
+}
+
+.upload-error {
+  font-size: 14px;
+  line-height: 20px;
+  color: #b3261e;
+  margin-bottom: 16px;
+  max-width: 460px;
+}
+
+.field-grid {
+  display: grid;
+  gap: 12px 16px;
+  max-width: 560px;
+  margin-bottom: 26px;
+}
+
+.field-grid.two-col { grid-template-columns: 1fr 1fr; }
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--tf-muted);
+  margin-bottom: 2px;
+}
+
+/* viewport_overrides.small = { type: "split" }, which on a phone means the photo
+   drops out and the question runs full width. */
+@media (max-width: 800px) {
+  :root { --tf-pad-x: 24px; }
+
+  .slide-wrap,
+  .slide-wrap.no-image { grid-template-columns: 1fr; }
+
+  .slide-image { display: none; }
+
+  .slide-content { padding: 88px var(--tf-pad-x) 32px; }
+
+  .slide-logo { top: 24px; height: 28px; }
+
+  .slide-heading { font-size: 21px; line-height: 28px; }
+
+  .slide-sub { font-size: 16px; line-height: 22px; margin-bottom: 20px; }
+
+  .choice { width: 100%; max-width: 420px; }
+
+  .field-grid.two-col { grid-template-columns: 1fr; }
+}
+
+/* Slide entry. Replaces AnimatePresence, see components/SlideTransition.jsx for why.
+   Mount-only, so there is no exit state that can strand a slide at opacity 0. */
+@keyframes slideEnterRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideEnterLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.slide-enter {
+  width: 100%;
+  height: 100%;
+  animation: slideEnterRight 0.3s ease-in-out both;
+}
+
+.slide-enter.from-left { animation-name: slideEnterLeft; }
+
+/* Anyone who has asked their OS to stop moving things gets a straight cut. */
+@media (prefers-reduced-motion: reduce) {
+  .slide-enter { animation: none; opacity: 1; transform: none; }
+}
