@@ -83,7 +83,13 @@ export async function uploadArtwork(file) {
         // Older Safari. Still unguessable enough paired with the timestamp.
         `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
 
-    const path = `quote-requests/earthbound/${id}-${sanitizeName(file.name)}`;
+    // FLAT under `uploads/`, and it has to stay that way. The shared obg-calculator
+    // bucket publishes `match /uploads/{fileName}`, and a single-segment wildcard in a
+    // Firebase rule matches exactly one path segment. Anything nested falls through to
+    // `match /{allPaths=**} { allow read, write: if false }` and 403s. Verified against
+    // the live bucket 2026-08-19: `quote-requests/earthbound/...` -> 403,
+    // `uploads/earthbound-...` -> 200. The shop prefix rides in the filename, not a folder.
+    const path = `uploads/earthbound-${id}-${sanitizeName(file.name)}`;
     const storageRef = ref(storage, path);
 
     await uploadBytes(storageRef, file, {
