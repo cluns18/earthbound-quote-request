@@ -25,6 +25,8 @@ import conversionValue from './utils/conversionValue';
 
 const EVENT_CHOICE = 'Live on Site Printing';
 const ART_EMAIL = 'Art@Earthboundinc.com';
+const SALES_EMAIL = 'Sales@Earthboundinc.com';
+const SHOP_PHONE = '(616) 774-0096';
 
 const EVENT_PATH = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q12', 'q13'];
 const STANDARD_PATH = ['q1', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12', 'q13'];
@@ -36,6 +38,7 @@ function App() {
     const [step, setStep] = useState(0);
     const [direction, setDirection] = useState('left');
     const [done, setDone] = useState(false);
+    const [sendFailed, setSendFailed] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [projectTypes, setProjectTypes] = useState([]);
@@ -106,14 +109,22 @@ function App() {
             artwork,
         };
 
+        // sendQuoteRequest already retried. Reaching the catch means the lead did not
+        // land, so the customer gets the shop's number instead of a thank-you that lies
+        // to them. Telling someone "we'll be in touch" when nothing arrived is the one
+        // failure mode that costs Earthbound the job outright.
         try {
             await sendQuoteRequest(payload);
         } catch (err) {
             console.error('Lead send failed:', err);
+            setIsSubmitting(false);
+            setSendFailed(true);
+            return;
         }
 
-        // Fire the conversion on the PARENT page. The iframe is cross-origin, so a
-        // gtag call in here cannot see the parent's gclid cookie and would not attribute.
+        // Fire the conversion on the PARENT page, and only once the lead is really in.
+        // The iframe is cross-origin, so a gtag call in here cannot see the parent's
+        // gclid cookie and would not attribute.
         try {
             const value = conversionValue(isLiveEvent ? eventDetails : quantity, projectTypes);
             window.parent.postMessage({
@@ -132,6 +143,21 @@ function App() {
         setIsSubmitting(false);
         setDone(true);
     };
+
+    if (sendFailed) {
+        return (
+            <SlideTransition keyProp='send-failed' direction='left'>
+                <Slide
+                    progress={1}
+                    heading={"Our form just went down on us."}
+                    sub={`Sorry about that. Nothing you did. Your details did not reach us, so please call ${SHOP_PHONE} or email ${SALES_EMAIL} and we will pick it straight up. We are open and we do want the job.`}
+                    showBack={false}
+                    onNext={() => { setSendFailed(false); }}
+                    nextLabel='Try sending again'
+                />
+            </SlideTransition>
+        );
+    }
 
     if (done) {
         return (

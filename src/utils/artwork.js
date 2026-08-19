@@ -46,6 +46,7 @@ export const MAX_MB = MAX_BYTES / (1024 * 1024);
 function sanitizeName(name) {
     return String(name || 'artwork')
         .replace(/[\\/]/g, '-')        // no path separators
+        // eslint-disable-next-line no-control-regex -- stripping control characters is the point
         .replace(/[\u0000-\u001f\u007f]/g, '')  // no control characters
         .replace(/\s+/g, '-')
         .replace(/[^A-Za-z0-9._-]/g, '')

@@ -41,7 +41,33 @@ function buildProjectSummary(d) {
     return lines.join('\n');
 }
 
-export const sendQuoteRequest = (formData) => {
+/**
+ * A lead is the whole point of this form, so one flaky network moment must not eat it.
+ * Three attempts with a widening gap; anything still failing after that is a real outage
+ * and the caller shows the customer a way to reach the shop directly.
+ *
+ * Only transport failures and 5xx are retried. A 4xx means the payload itself is wrong,
+ * and sending it twice more just makes the shop wait longer for the same rejection.
+ */
+const ATTEMPT_DELAYS_MS = [600, 1800];
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export const sendQuoteRequest = async (formData) => {
+    let lastError;
+    for (let attempt = 0; attempt <= ATTEMPT_DELAYS_MS.length; attempt++) {
+        try {
+            return await postLead(formData);
+        } catch (err) {
+            lastError = err;
+            if (err.status && err.status < 500) throw err;
+            if (attempt < ATTEMPT_DELAYS_MS.length) await sleep(ATTEMPT_DELAYS_MS[attempt]);
+        }
+    }
+    throw lastError;
+};
+
+const postLead = (formData) => {
     return fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -74,7 +100,11 @@ export const sendQuoteRequest = (formData) => {
             source: formData.heardAbout,
         }),
     }).then((r) => {
-        if (!r.ok) throw new Error('Lead send failed: ' + r.status);
+        if (!r.ok) {
+            const err = new Error('Lead send failed: ' + r.status);
+            err.status = r.status;
+            throw err;
+        }
         return r.json();
     });
 };
