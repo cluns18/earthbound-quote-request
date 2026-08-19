@@ -1,76 +1,93 @@
 <!--
   ============================================================================
-  ROGUE LAB QUOTE FORM - theme embed + conversion bridge
+  EARTHBOUND INC. QUOTE FORM - PageFly embed + GA4 bridge
   ============================================================================
-  Two ways this is wired:
+  Where this goes
+  ---------------
+  /pages/get-quoted is a PageFly page, not a plain Shopify page. Its body_html
+  is empty; the Typeform lives in a PageFly "Custom HTML" element inside section
+  pf-e9b6, and today that element holds exactly this:
 
-  A) A/B TEST PAGES (live now, as drafts): /pages/screen-printing-ab-test and
-     /pages/embroidery-ab-test already carry the iframe + this bridge inside their
-     own page template (custom-liquid section). Nothing to paste for those.
+      <div data-tf-live="01HGCPQC1G9Q95TN680B18176V"></div>
+      <script src="//embed.typeform.com/next/embed.js"></script>
 
-  B) DIRECT EMBED on any other page: paste the <div> where the form should sit,
-     and add the <script> ONCE before </body> in theme.liquid (or that page body).
+  The cutover is replacing the contents of that one element with part 1 below,
+  in the PageFly editor. Nothing in the Shopify theme has to change.
 
-  The iframe fires two events via postMessage that this bridge turns into Google
-  Ads conversions AND a dataLayer push for GTM:
-    obgform_submission -> AW-11156454355/_iALCIOwsrscENP358cp  (Quote Form Lead - New Form (A/B), dynamic value)
-    obgform_call_click -> AW-11156454355/UvgYCN6rvrQcENP358cp  (Call Button Click)
+  Height
+  ------
+  The form is 100vh internally, so it fills whatever frame it is given. 820px
+  suits the 50/50 desktop split; the media query drops it on phones where the
+  photo is hidden and the questions stack.
 
-  The submission conversion carries dynamic VALUE (summed quantity, CAD), matching
-  the AZ Hot Tees pattern, and also pushes that value to the dataLayer so GTM can
-  collect it. Fire happens on the Rogue domain (parent), which is where the gclid
-  cookie lives, so attribution is correct (the iframe is cross-origin).
+  GA4
+  ---
+  Earthbound has no Google Ads account on this store and no GTM. GA4
+  G-6LQZ1RYQXF runs through Shopify's Google channel web pixel, which lives in
+  the web-pixels-manager sandbox, so there is NO `gtag` on window for a page
+  script to call. Part 2 therefore loads its own gtag for the same property with
+  send_page_view:false, so it reports the lead without double counting the
+  pageviews the Shopify pixel already sends.
 
-  gtag('config','AW-11156454355') is already loaded by theme.liquid, so this only
-  adds the event listener. ?src= tells the form which page it is on so the
-  decoration method is captured on the lead + in the dataLayer.
+  Part 2 is optional. The form emails the lead either way; this only adds the
+  GA4 event. Leave it out and nothing about the lead breaks.
   ============================================================================
 -->
 
-<!-- 1) EMBED: put this where the form should sit on the page -->
-<div id="rl-quote" style="max-width:1040px;margin:0 auto;">
+<!-- 1) EMBED: the whole contents of the PageFly Custom HTML element -->
+<div id="eb-quote" style="max-width:1240px;margin:0 auto;">
   <iframe
-    src="https://rogue-lab-quote-request.netlify.app/?src=REPLACE_WITH_PAGE"
-    title="Rogue Lab Quote Request"
-    style="width:100%;height:640px;border:none;display:block;background:#121212;border-radius:14px;"
+    src="https://earthbound-quote-request.netlify.app/"
+    title="Earthbound Inc. quote request"
+    style="width:100%;height:820px;border:none;display:block;background:#F3F3F0;"
     loading="lazy"></iframe>
 </div>
-<!-- Set ?src= per page: screen-printing | embroidery | custom-apparel-winnipeg -->
+<style>
+  @media (max-width: 860px) {
+    #eb-quote iframe { height: 680px; }
+  }
+</style>
 
-
-<!-- 2) BRIDGE: add ONCE before </body> in theme.liquid -->
+<!-- 2) OPTIONAL GA4 BRIDGE: same element, or once before </body> -->
 <script>
   (function () {
-    window.addEventListener('message', function (e) {
-      var d = e.data || {};
-      if (d.event === 'obgform_submission') {
-        var qty = parseInt(d.quantity, 10) || 1;
-        // push the conversion value to the dataLayer for GTM
+    var GA4 = 'G-6LQZ1RYQXF';
+    var loaded = false;
+
+    // Load gtag only when a lead actually lands, so a visitor who never submits
+    // pays nothing for it.
+    function loadGtag(cb) {
+      if (loaded) return cb();
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4;
+      s.onload = function () {
         window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: 'rl_lead_form_conversion',
-          conversion_value: qty,
-          value: qty,
-          currency: 'CAD',
+        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        // send_page_view:false, because Shopify's own pixel already counts those.
+        window.gtag('config', GA4, { send_page_view: false });
+        cb();
+      };
+      document.head.appendChild(s);
+    }
+
+    window.addEventListener('message', function (e) {
+      // The form is on netlify.app and the page is on earthboundinc.com, so the
+      // origin check is what keeps any other frame from faking a lead.
+      if (e.origin !== 'https://earthbound-quote-request.netlify.app') return;
+      var d = e.data || {};
+      if (d.event !== 'obgform_submission') return;
+
+      loadGtag(function () {
+        window.gtag('event', 'generate_lead', {
+          value: Number(d.conversion_value) || 0,
+          currency: 'USD',
           decoration_method: d.decoration_method || '',
-          send_to: 'AW-11156454355/_iALCIOwsrscENP358cp'
+          source: d.source || '',
         });
-        // fire the new Google Ads conversion with dynamic value
-        if (typeof gtag === 'function') {
-          gtag('event', 'conversion', {
-            send_to: 'AW-11156454355/_iALCIOwsrscENP358cp',
-            value: qty,
-            currency: 'CAD',
-            transaction_id: 'rlab-' + Date.now()
-          });
-        }
-      } else if (d.event === 'obgform_call_click') {
-        if (typeof gtag === 'function') {
-          gtag('event', 'conversion', {
-            send_to: 'AW-11156454355/UvgYCN6rvrQcENP358cp'
-          });
-        }
-      }
+      });
     });
   })();
 </script>
