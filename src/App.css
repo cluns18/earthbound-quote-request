@@ -47,7 +47,11 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 36px var(--tf-pad-x);
+  /* Asymmetric on purpose. The left gutter is the measured 80px; the right one is
+     narrower so the heading can run to its full 744px. Nothing else in here is bound
+     by it: inputs cap at 460px, choices are a fixed 256px, the button is 110px and the
+     help text keeps its own 702px. */
+  padding: 36px 40px 36px var(--tf-pad-x);
   overflow-y: auto;
   text-align: left;
 }
@@ -62,8 +66,10 @@ body {
 /* logo.placement "left", logo.size "small" */
 .slide-logo {
   position: absolute;
-  top: 30px;
-  left: var(--tf-pad-x);
+  /* Measured on the live form: x=20, y=35. It hugs the corner rather than lining up
+     with the 80px text gutter, so this is deliberately NOT --tf-pad-x. */
+  top: 35px;
+  left: 20px;
   height: 32px;
   width: auto;
   z-index: 3;
@@ -78,12 +84,21 @@ body {
   line-height: 34px;
   color: var(--tf-question);
   margin-bottom: 14px;
-  max-width: 702px;
+  /* The Q1 heading is the widest copy on the form. At 26px Quantico the line
+     "Welcome to Earthbound Inc.  We've Been Providing Michigan" measures 737px, and the
+     live Typeform keeps "Michigan" on that line. The old 702px cap broke a line early,
+     which is why the rebuild ran to three lines where the real form runs two.
+     744 = the 864px column minus the 80px left gutter and the 40px right one. */
+  max-width: 744px;
   /* The Typeform copy carries deliberate line breaks. Honor them. */
   white-space: pre-line;
 }
 
-.required-star { color: var(--tf-answer); }
+/* The live form renders the required asterisk in the question colour, the same grey as
+   the heading it sits in, not the answer blue. Observed in a same-viewport screenshot
+   comparison rather than read off getComputedStyle, so this is the one value here that
+   is not measured. It is a one-line revert if it turns out to be the answer colour. */
+.required-star { color: var(--tf-question); }
 
 /* Measured: 18px / #55575A / 24px line-height. */
 .slide-sub {
