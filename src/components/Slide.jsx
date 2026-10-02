@@ -32,7 +32,7 @@ const Slide = ({
         <div className='slide-content'>
             <h1 className='slide-heading'>
                 {heading}
-                {required && <span className='required-star'> *</span>}
+                {required && <span className='required-star'>{'\u00A0'}*</span>}
             </h1>
             {sub && <p className='slide-sub'>{sub}</p>}
             {children}
