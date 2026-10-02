@@ -1,30 +1,52 @@
 @import 'tailwindcss';
 
-/* Quantico is the Typeform theme font (KITfG4JN) and also what earthboundinc.com runs. */
-@import url('https://fonts.googleapis.com/css2?family=Quantico:wght@400;600;700&display=swap');
+/* ==========================================================================
+   READ THIS BEFORE CHANGING A NUMBER IN THIS FILE.
 
-/* Typeform theme KITfG4JN plus values measured off the live form at
-   form.typeform.com/to/oDOWHJbD. Every number here was read out of getComputedStyle
-   on the real thing rather than eyeballed, so treat them as the spec. */
+   This form is a reproduction of Earthbound's real Typeform (form oDOWHJbD,
+   theme KITfG4JN), their main intake, 921 completed responses since Dec 2023.
+   Every GEOMETRY value below was read out of getComputedStyle on the live form
+   rather than eyeballed. Those are still the spec and they still govern.
+
+   COLOUR AND TYPE deliberately departed from that parity on 2026-09-16, under
+   the propagation checklist in earthbound-inc/brand/BRAND-SPEC.md. The Typeform
+   theme ran #008AC8, which is in neither Earthbound's logo, their 1978 sign nor
+   their shop, and which carries a white label at 3.84:1, under the AA floor.
+   The whole brand moved to "The Ink Room" on 2026-09-02.
+
+   So: if a value below is a SIZE, a POSITION or a TIMING, it is measured and you
+   should leave it alone. If it is a COLOUR or a FACE, it comes from the spec.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 :root {
-  --tf-question: #2e3035;   /* theme.colors.question */
-  --tf-answer: #037eb4;     /* theme.colors.answer   */
-  --tf-button: #008ac8;     /* theme.colors.button   */
-  --tf-background: #f3f3f0; /* theme.colors.background */
-  --tf-muted: #55575a;      /* help + hint text, measured */
+  /* Ink Room tokens. Measured ratios are in BRAND-SPEC.md, do not re-litigate. */
+  --eb-paper: #f2f0e4;      /* was --tf-background #f3f3f0                    */
+  --eb-panel: #e6e5d4;
+  --eb-line: #d2d0bc;
+  --eb-ink: #24221a;        /* was --tf-question   #2e3035. 13.92:1 on paper  */
+  --eb-ink-soft: #5a5747;   /* was --tf-muted      #55575a.  6.36:1 on paper  */
+  --eb-pine: #23695b;       /* was --tf-answer     #037eb4.  5.66:1 on paper  */
+  --eb-pine-deep: #1b5247;
+  --eb-river: #2851a8;
+  --eb-brick: #c22240;      /* semantic only. replaces Material's #b3261e     */
 
-  /* Typeform renders 8px corners here despite rounded_corners: "small". */
+  --eb-font-display: 'Poppins', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --eb-font-body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --eb-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* MEASURED. Typeform renders 8px corners here despite rounded_corners: "small". */
   --tf-radius: 8px;
-
+  /* MEASURED. The left gutter on the live form. */
   --tf-pad-x: 80px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--tf-background);
-  color: var(--tf-question);
-  font-family: 'Quantico', sans-serif;
+  background: var(--eb-paper);
+  color: var(--eb-ink);
+  font-family: var(--eb-font-body);
 }
 
 /* Measured: image at x=864 of a 1728 viewport, so a straight 50/50, and it runs the
@@ -37,7 +59,7 @@ body {
   grid-template-columns: 1fr 1fr;
   position: relative;
   overflow: hidden;
-  background: var(--tf-background);
+  background: var(--eb-paper);
 }
 
 /* Questions with no attachment in the Typeform render full width there too. */
@@ -75,14 +97,18 @@ body {
   z-index: 3;
 }
 
-/* Measured: 26px / 400 weight / 34px line-height. Quantico at 700 is much heavier
-   than the live form, so this stays at 400. */
+/* MEASURED GEOMETRY: 26px / 34px line-height / 744px cap. Those stay.
+   The FACE is the deliberate departure. Quantico 400 was Typeform parity; the
+   site's headings moved to Poppins on 2026-10-02. Questions here are full
+   sentences, so they take Poppins 700 in sentence case, not the 800 caps the
+   site uses for short headings. */
 .slide-heading {
-  font-family: 'Quantico', sans-serif;
-  font-weight: 400;
+  font-family: var(--eb-font-display);
+  font-weight: 700;
+  letter-spacing: -0.015em;
   font-size: 26px;
   line-height: 34px;
-  color: var(--tf-question);
+  color: var(--eb-ink);
   margin-bottom: 14px;
   /* The Q1 heading is the widest copy on the form. At 26px Quantico the line
      "Welcome to Earthbound Inc.  We've Been Providing Michigan" measures 737px, and the
@@ -98,13 +124,13 @@ body {
    the heading it sits in, not the answer blue. Observed in a same-viewport screenshot
    comparison rather than read off getComputedStyle, so this is the one value here that
    is not measured. It is a one-line revert if it turns out to be the answer colour. */
-.required-star { color: var(--tf-question); }
+.required-star { color: var(--eb-ink); }
 
 /* Measured: 18px / #55575A / 24px line-height. */
 .slide-sub {
   font-size: 18px;
   line-height: 24px;
-  color: var(--tf-muted);
+  color: var(--eb-ink-soft);
   margin-bottom: 26px;
   max-width: 702px;
   white-space: pre-line;
@@ -114,7 +140,7 @@ body {
 .field-hint {
   font-size: 14px;
   line-height: 18px;
-  color: var(--tf-muted);
+  color: var(--eb-ink-soft);
   margin-bottom: 12px;
 }
 
@@ -124,9 +150,9 @@ body {
   max-width: 460px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(3, 126, 180, 0.35);
-  color: var(--tf-answer);
-  font-family: 'Quantico', sans-serif;
+  border-bottom: 1px solid rgba(35, 105, 91, 0.35);
+  color: var(--eb-pine);
+  font-family: var(--eb-font-body);
   font-size: 18px;
   padding: 8px 0;
   outline: none;
@@ -136,10 +162,10 @@ body {
 .slide-textarea { resize: none; }
 
 .slide-input:focus,
-.slide-textarea:focus { border-color: var(--tf-button); }
+.slide-textarea:focus { border-color: var(--eb-pine); }
 
 .slide-input::placeholder,
-.slide-textarea::placeholder { color: rgba(3, 126, 180, 0.4); }
+.slide-textarea::placeholder { color: rgba(35, 105, 91, 0.45); }
 
 /* Measured: 256x44, 8px radius, rgba(243,243,240,0.6) fill, and the hairline is a
    1px spread box-shadow in the answer colour at 10%, not a border. */
@@ -156,65 +182,96 @@ body {
   width: 256px;
   min-height: 44px;
   text-align: left;
-  background: rgba(243, 243, 240, 0.6);
-  box-shadow: rgba(3, 126, 180, 0.1) 0 0 0 1px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: rgba(35, 105, 91, 0.12) 0 0 0 1px;
   border: none;
   border-radius: var(--tf-radius);
-  color: var(--tf-answer);
-  font-family: 'Quantico', sans-serif;
+  color: var(--eb-pine);
+  font-family: var(--eb-font-body);
   font-size: 18px;
   padding: 6px 10px;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
 
-.choice:hover { background: rgba(3, 126, 180, 0.08); }
+/* The hover used to repaint this pill. A hover background swap is a locked no on
+   this brand, so hover tightens the ring instead and the fill holds still. The
+   SELECTED state below still changes, which is correct: that is state, not hover. */
+.choice:hover { box-shadow: rgba(35, 105, 91, 0.45) 0 0 0 2px; }
 
 .choice.selected {
-  background: rgba(3, 126, 180, 0.14);
-  box-shadow: var(--tf-button) 0 0 0 1px;
+  background: rgba(35, 105, 91, 0.14);
+  box-shadow: var(--eb-pine) 0 0 0 1px;
 }
 
-/* Measured: 110x40, 8px radius, 14px / 600. theme.has_transparent_button is false, so
-   the enabled state is a solid fill; white on #008AC8 clears contrast comfortably.
-   Disabled reproduces the live form's near-invisible resting state. */
+/* MEASURED GEOMETRY: 110x40 footprint, 8px radius. Those stay.
+   The old note here claimed white on #008AC8 "clears contrast comfortably". It does
+   not. It measures 3.84:1, under the 4.5:1 floor, and that claim is why the colour
+   survived as long as it did. White on pine is 6.48:1. The disabled state no longer
+   reproduces the live form's near-invisible resting state either, see below. */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 110px;
   height: 40px;
-  background: var(--tf-button);
+  background: var(--eb-pine);
   color: #ffffff;
-  font-family: 'Quantico', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
+  font-family: var(--eb-font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   padding: 8px 18px;
-  border-radius: var(--tf-radius);
+  border-radius: 999px;
   border: none;
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.btn-primary:hover { filter: brightness(0.93); }
+/* Lifts, does not repaint. brightness() on hover was dimming the fill, which is a
+   hover colour change by another name. White on pine holds at 6.48:1 in every state. */
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(36, 34, 26, 0.20);
+}
 
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
+
+/* The live Typeform's resting state was near invisible and the rebuild copied it.
+   A white label on pine at 25% measures under 2:1. Ink-soft carries white at
+   7.27:1 and still reads as "not yet", which is the whole job of the state. */
 .btn-primary:disabled {
-  background: rgba(3, 126, 180, 0.25);
-  color: #ffffff;
+  /* No opacity fade here. Fading the whole button fades its label with it: ink-soft
+     at 55% over paper lands on #9E9C8E, and a white label on that is 2.76:1. The
+     state reads as "not yet" through a flat, quiet fill instead, and its label stays
+     legible at 4.67:1. */
+  background: var(--eb-line);
+  color: var(--eb-ink-soft);
   cursor: default;
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-back {
   background: transparent;
   border: none;
-  color: var(--tf-muted);
-  font-family: 'Quantico', sans-serif;
+  color: var(--eb-ink-soft);
+  font-family: var(--eb-font-body);
   font-size: 14px;
   cursor: pointer;
   padding: 8px 4px;
 }
 
-.btn-back:hover { color: var(--tf-question); }
+.btn-back:hover { color: var(--eb-ink); }
+
+/* Quantities and any spec figure the form echoes back. Tabular so digits hold
+   their column. */
+.eb-num {
+  font-family: var(--eb-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
 
 .nav-row {
   display: flex;
@@ -230,13 +287,13 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: rgba(46, 48, 53, 0.1);
+  background: rgba(36, 34, 26, 0.12);
   z-index: 4;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--tf-button);
+  background: var(--eb-pine);
   transition: width 0.3s ease;
 }
 
@@ -245,12 +302,12 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(243, 243, 240, 0.6);
-  box-shadow: rgba(3, 126, 180, 0.1) 0 0 0 1px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: rgba(35, 105, 91, 0.12) 0 0 0 1px;
   border: none;
   border-radius: var(--tf-radius);
-  color: var(--tf-answer);
-  font-family: 'Quantico', sans-serif;
+  color: var(--eb-pine);
+  font-family: var(--eb-font-body);
   font-size: 16px;
   padding: 14px 20px;
   cursor: pointer;
@@ -259,12 +316,12 @@ body {
   width: 100%;
 }
 
-.upload-btn:hover { background: rgba(3, 126, 180, 0.08); }
+.upload-btn:hover { box-shadow: rgba(35, 105, 91, 0.45) 0 0 0 2px; }
 
 .upload-note {
   font-size: 14px;
   line-height: 20px;
-  color: var(--tf-muted);
+  color: var(--eb-ink-soft);
   margin-bottom: 22px;
   max-width: 460px;
 }
@@ -272,7 +329,7 @@ body {
 .upload-error {
   font-size: 14px;
   line-height: 20px;
-  color: #b3261e;
+  color: var(--eb-brick);
   margin-bottom: 16px;
   max-width: 460px;
 }
@@ -290,7 +347,7 @@ body {
   display: block;
   font-size: 14px;
   line-height: 18px;
-  color: var(--tf-muted);
+  color: var(--eb-ink-soft);
   margin-bottom: 2px;
 }
 
