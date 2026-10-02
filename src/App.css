@@ -17,7 +17,7 @@
    So: if a value below is a SIZE, a POSITION or a TIMING, it is measured and you
    should leave it alone. If it is a COLOUR or a FACE, it comes from the spec.
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
   /* Ink Room tokens. Measured ratios are in BRAND-SPEC.md, do not re-litigate. */
@@ -31,10 +31,9 @@
   --eb-river: #2851a8;
   --eb-brick: #c22240;      /* semantic only. replaces Material's #b3261e     */
 
-  --eb-font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --eb-font-display: 'Poppins', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --eb-font-body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --eb-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --eb-wonk: 'SOFT' 30, 'WONK' 1;
 
   /* MEASURED. Typeform renders 8px corners here despite rounded_corners: "small". */
   --tf-radius: 8px;
@@ -100,13 +99,13 @@ body {
 
 /* MEASURED GEOMETRY: 26px / 34px line-height / 744px cap. Those stay.
    The FACE is the deliberate departure. Quantico 400 was Typeform parity; the
-   spec gives headings to Fraunces 700 in Title Case, with WONK on because that
-   is the axis the face gets its warmth from. */
+   site's headings moved to Poppins on 2026-10-02. Questions here are full
+   sentences, so they take Poppins 700 in sentence case, not the 800 caps the
+   site uses for short headings. */
 .slide-heading {
   font-family: var(--eb-font-display);
   font-weight: 700;
-  font-variation-settings: 'opsz' 36, var(--eb-wonk);
-  letter-spacing: -0.005em;
+  letter-spacing: -0.015em;
   font-size: 26px;
   line-height: 34px;
   color: var(--eb-ink);
@@ -218,13 +217,13 @@ body {
   height: 40px;
   background: var(--eb-pine);
   color: #ffffff;
-  font-family: var(--eb-font-body);
+  font-family: var(--eb-font-display);
   font-weight: 700;
   font-size: 13px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 8px 18px;
-  border-radius: var(--tf-radius);
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;

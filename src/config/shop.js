@@ -28,7 +28,7 @@ const SHOP_CONFIG = {
     // a white label at 3.84:1, under the AA floor, and it is in neither the logo, the
     // 1978 sign nor the shop. The geometry below is still the measured Typeform.
     theme: {
-        font: 'Fraunces / Archivo',
+        font: 'Poppins / Archivo',
         question: '#24221A',   // ink. headings and question copy
         answer: '#23695B',     // pine. typed answers + choice text
         button: '#23695B',     // pine. primary button fill, white label 6.48:1
